@@ -99,8 +99,10 @@ public class SerialDeviceManager : MonoBehaviour
     /// <exception cref="NullReferenceException"></exception>
     private void BeginSerialCommuniation()
     {
-        UpdateDeviceToUse(deviceChosen);
-
+        // TODO: Find out what is causing the serial port to get stuck in
+        // UpdateDeviceToUse method.
+        //UpdateDeviceToUse(deviceChosen);
+        deviceToUse = deviceChosen;
         if (deviceToUse == null)
             throw new NullReferenceException("Chosen device cannot be null. Are you sure you chose a device in Serial Device Manager?");
 
