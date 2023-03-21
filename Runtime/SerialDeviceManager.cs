@@ -105,7 +105,7 @@ public class SerialDeviceManager : MonoBehaviour
         // This ensures that wherever the user plugs in the desired serial port
         // it will work including in builds. 
         UpdateDeviceToUse(deviceChosen);
-
+        
         if (deviceToUse == null)
             throw new NullReferenceException("Chosen device cannot be null. Are you sure you chose a device in Serial Device Manager?");
 
