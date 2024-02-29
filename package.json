@@ -1,35 +1,15 @@
 {
-  "name": "com.hsoar.serial-unity-package",
-  "version": "0.2.2",
+  "name": "com.falmouth.serial-unity-package",
+  "version": "1.0",
   "displayName": "S.U.P. - Serial Unity Package",
-  "description": "A barebones package designed to interface arduino based devices with unity.",
-  "unity": "2020.3",
-  "unityRelease": "25f1",
+  "description": "A simple package designed to interface arduino based devices with unity.",
+  "unity": "2022.3",
+  "unityRelease": "2f1",
   "author": {
-    "name": "Harry Soar",
-    "email": "hsoar96@gmail.com",
-    "url": "https://github.com/HSoar96"
+    "name": "Jamie Covell",
+    "email": "jamiecovell@falmouth.ac.uk",
+    "url": "https://github.falmouth.ac.uk/Games-Academy/Unity-Serial-Package.git"
   },
   "samples": [
-    {
-      "displayName": "Arduino LED Changer",
-      "description": "A scene containing a Serial Manager, an LED changing script that enables an LED pressing W and disables with S. As well as corrosponding Arduino .INO and PlatformIO .cpp files.",
-      "path": "Samples~/Arduino LED Changer"
-    },
-    {
-      "displayName": "Serial Manager Prefab",
-      "description": "Contains a sample Serial Manager prefab to use in your scenes.",
-      "path": "Samples~/Serial Manager"
-    },
-    {
-      "displayName": "XY Controller",
-      "description": "A scene containing a Serial Manager, a XY Controller script that uses two potentiometers to control a cube on screen. As well as the corrosponding Arduino .INO and .CPP files.",
-      "path": "Samples~/XY Controller"
-    },
-    {
-      "displayName": "JSON Handler",
-      "description": "A scene containing a Serial Manager, and a JSONHandler object that sends a mapped mouse position to an arduino and awaits a response. As well as corrosponding Arduino .INO and PlatformIO .cpp files.",
-      "path": "Samples~/JSON Handler"
-    }
   ]
 }
