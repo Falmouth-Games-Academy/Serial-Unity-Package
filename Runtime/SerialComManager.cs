@@ -2,12 +2,10 @@ using UnityEngine;
 #if SUP_API_SET
 using System.IO.Ports;
 #endif
-namespace SerialUnityPackage
-{
 
-    // Add to a namespace
-    public class SerialComManager : MonoBehaviour
-    {
+// Add to a namespace
+public class SerialComManager : MonoBehaviour
+{
 
 
 #if SUP_API_SET
@@ -99,12 +97,11 @@ namespace SerialUnityPackage
         instance = null;
     }
 #else
-        private void Awake()
-        {
-            Debug.LogError("Please update .Net Version");
-            Debug.Break();
-        }
-#endif
+    private void Awake()
+    {
+        Debug.LogError("Please update .Net Version");
+        Debug.Break();
     }
+#endif
 
 }
