@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class Example : MonoBehaviour
 {
-
+    
+#if SUP_API_SET
     [SerializeField] private float brightness;
     [SerializeField] private Image im;
     private bool led = false;
@@ -27,5 +28,6 @@ public class Example : MonoBehaviour
         led = !led;
         SerialComManager.instance.SendDataToArduino($"b{lPin}");
     }
+#endif
 
 }
