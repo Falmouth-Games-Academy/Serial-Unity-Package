@@ -1,0 +1,16 @@
+{
+    "name": "SUPEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:27061879408a87c4e85aba54f229c5ff"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
