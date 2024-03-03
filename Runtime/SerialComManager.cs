@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Linq;
 #if SUP_API_SET
 using System.IO.Ports;
 #endif
@@ -17,8 +18,12 @@ public class SerialComManager : MonoBehaviour
     private const string handshake = "x";
     [SerializeField, Tooltip("Number of milliseconds before a serial read will timeout and return nothing")]
     private int serialReadTimeout = 500;
-    [SerializeField, Tooltip("This needs to be the same as in your arduino code")]
+    [SerializeField, Tooltip("Enter a serial port manually (e.g. COM3 or /dev/ttyUSB0) to skip the automatic search. Leave blank to search for all available ports.")]
+    private string serialPortOverride = "";
+    [SerializeField, Tooltip("This needs to match your Arduino code")]
     private int baudRate = 9600;
+    [SerializeField, Tooltip("Enable extra serial debug messages in the console")]
+    private bool debug = false;
     private bool serialReady = false;
 
     private void Start()
@@ -31,21 +36,38 @@ public class SerialComManager : MonoBehaviour
         }
         instance = this;
 
-        //Find the arduino
-        StartCoroutine(FindSerialPort());
+        //Find the Arduino
+        StartCoroutine(ConnectSerialPort());
     }
 
-    private IEnumerator FindSerialPort()
+    private IEnumerator ConnectSerialPort()
     {
-        //Look at all serial ports available and send the handshake character to each of them
-        string[] availablePorts = SerialPort.GetPortNames();
-        bool foundArduino = false;
-        Debug.Log("Looking for Arduino on available serial ports...");
+        // First we determine whether to use the override or to search for all available ports
+        string[] availablePorts; 
+        if(!string.IsNullOrEmpty(serialPortOverride))
+        {
+            availablePorts = new string[] { serialPortOverride };            
+        } 
+        else 
+        {
+            // Query the system for all available serial ports
+            availablePorts = SerialPort.GetPortNames();
 
+            // Platform specific code to filter out ports that are not likely to be Arduinos
+            #if UNITY_STANDALONE_WIN
+                // Remove COM1 from the list of available ports, as it is usually an onboard serial port
+                availablePorts = availablePorts.Where(port => !port.Equals("COM1")).ToArray();
+            #endif
+            Debug.Log("Looking for Arduino on available serial ports...");
+        }
+        
+        bool foundArduino = false;
+        
         foreach (string port in availablePorts)
         {
-            Debug.Log($"Trying {port}");
+            if(debug) Debug.Log($"Trying {port}");
             sp = new SerialPort(port, baudRate);
+            sp.DtrEnable = true;
             sp.ReadTimeout = serialReadTimeout;
             try
             {
@@ -53,7 +75,7 @@ public class SerialComManager : MonoBehaviour
             }
             catch(System.Exception e)
             {
-                Debug.Log($"Could not open port: {e.Message}");
+                if(debug) Debug.Log($"Could not open port: {e.Message}");
 
                 #if UNITY_STANDALONE_LINUX
                     if(e.Message.Contains("Permission denied")) 
@@ -75,7 +97,7 @@ public class SerialComManager : MonoBehaviour
             } 
             catch(System.Exception e)
             {
-                Debug.Log($"Could not write to port: {e.Message}");
+                if(debug) Debug.Log($"Could not write to port: {e.Message}");
                 continue;
             }
 
@@ -87,7 +109,7 @@ public class SerialComManager : MonoBehaviour
             } 
             catch(System.Exception e)
             {
-                Debug.Log($"Could not read from port: {e.Message}");
+                if(debug) Debug.Log($"Could not read from port: {e.Message}");
                 continue;
             }
             
@@ -110,7 +132,7 @@ public class SerialComManager : MonoBehaviour
         else 
         {
             //Otherwise, we have found the device and are ready to communicate
-            print($"Found device on: {sp.PortName}");
+            print($"Connected to Arduino on port: {sp.PortName}");
             serialReady = true;
         }
     }
@@ -139,6 +161,11 @@ public class SerialComManager : MonoBehaviour
         sp.Write(_data);
     }
 
+    public bool IsConnected()
+    {
+        return serialReady;
+    }
+    
     private void OnDestroy()
     {
         //Send the kill character to the arduino when this gameobject is destroyed to close the serial port
