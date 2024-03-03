@@ -1,6 +1,6 @@
 {
   "name": "com.falmouth.serial-unity-package",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "displayName": "S.U.P. - Serial Unity Package",
   "description": "A simple package designed to interface arduino based devices with unity.",
   "unity": "2022.3",
