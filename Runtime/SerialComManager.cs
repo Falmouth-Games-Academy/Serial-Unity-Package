@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 #if SUP_API_SET
 using System.IO.Ports;
 #endif
@@ -31,37 +32,87 @@ public class SerialComManager : MonoBehaviour
         instance = this;
 
         //Find the arduino
-        FindSerialPort();
+        StartCoroutine(FindSerialPort());
     }
 
-    private void FindSerialPort()
+    private IEnumerator FindSerialPort()
     {
         //Look at all serial ports available and send the handshake character to each of them
         string[] availablePorts = SerialPort.GetPortNames();
+        bool foundArduino = false;
+        Debug.Log("Looking for Arduino on available serial ports...");
+
         foreach (string port in availablePorts)
         {
-            sp = new SerialPort(port, 9600);
+            Debug.Log($"Trying {port}");
+            sp = new SerialPort(port, baudRate);
             sp.ReadTimeout = serialReadTimeout;
-            sp.Open();
-            sp.Write(handshake);
-            string response = sp.ReadLine();
-            //if you receive the handshake character back then a connection is made and the port is open
-            if (response == handshake)
+            try
+            {
+                sp.Open();
+            }
+            catch(System.Exception e)
+            {
+                Debug.Log($"Could not open port: {e.Message}");
+
+                #if UNITY_STANDALONE_LINUX
+                    if(e.Message.Contains("Permission denied")) 
+                        Debug.LogError("Your user does not have permission to access the serial port. On most distros you can run the following command, then reboot:\nsudo usermod -aG dialout yourusername");
+                #endif
+
+                continue;
+            }
+
+
+            // The Arduino bootloader will first listen for code upload before running the sketch,
+            // so we wait for 2 seconds for the sketch to start running before attempting communication
+            yield return new WaitForSeconds(2);
+
+            // Attempt to write the handshake character
+            try
+            {
+                sp.Write(handshake);
+            } 
+            catch(System.Exception e)
+            {
+                Debug.Log($"Could not write to port: {e.Message}");
+                continue;
+            }
+
+            // Attempt to read the Arduino's response to the handshake character 
+            string response = "";
+            try
+            {
+                response = sp.ReadLine();
+            } 
+            catch(System.Exception e)
+            {
+                Debug.Log($"Could not read from port: {e.Message}");
+                continue;
+            }
+            
+            // Check that the recevied character matches the configured handshake character 
+            // We also trim any newline characters or whitespace
+            if (response.Trim() == handshake)
+            {
+                foundArduino = true;
                 break;
+            }
         }
 
 
         //If you have no open port then throw a debug error
-        if (!sp.IsOpen)
+        if (!sp.IsOpen || !foundArduino)
         {
-            Debug.LogError("No COM Useable Devices Found\n Is your device plugged in and implementing the handshake?");
-            return;
+            Debug.LogError("No usable serial devices found.\n Is your device plugged in and implementing the handshake?");
+            yield break;
         }
-        //Otherwise, we have found the device and are ready to communicate
-        print($"Found Device on: {sp.PortName}");
-
-        serialReady = true;
-
+        else 
+        {
+            //Otherwise, we have found the device and are ready to communicate
+            print($"Found device on: {sp.PortName}");
+            serialReady = true;
+        }
     }
 
     /// <summary>
