@@ -60,7 +60,7 @@ public class SerialComManager : MonoBehaviour
             #elif UNITY_STANDALONE_OSX
                 // MacOS will populate allPorts with /dev/tty* and we don't want to try all of them
                 // Remove any ports that don't start with /dev/tty.usb
-                portsToTry = allPorts.Where(port => port.StartsWith("/dev/tty.usb")).ToArray();
+                availablePorts = availablePorts.Where(port => port.StartsWith("/dev/tty.usb")).ToArray();
             #endif
             Debug.Log("Looking for Arduino on available serial ports...");
         }
