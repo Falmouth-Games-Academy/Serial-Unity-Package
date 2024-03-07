@@ -5,11 +5,11 @@ using System.Linq;
 using System.IO.Ports;
 #endif
 
-// Add to a namespace
-public class SerialComManager : MonoBehaviour
+namespace GamesAcademy.SerialPackage
 {
-
-
+    // Add to a namespace
+    public class SerialComManager : MonoBehaviour
+    {
 #if SUP_API_SET
 
     public static SerialComManager instance;
@@ -54,14 +54,14 @@ public class SerialComManager : MonoBehaviour
             availablePorts = SerialPort.GetPortNames();
 
             // Platform specific code to filter out ports that are not likely to be Arduinos
-            #if UNITY_STANDALONE_WIN
+#if UNITY_STANDALONE_WIN
                 // Remove COM1 from the list of available ports, as it is usually an onboard serial port
                 availablePorts = availablePorts.Where(port => !port.Equals("COM1")).ToArray();
-            #elif UNITY_STANDALONE_OSX
+#elif UNITY_STANDALONE_OSX
                 // MacOS will populate allPorts with /dev/tty* and we don't want to try all of them
                 // Remove any ports that don't start with /dev/tty.usb
                 availablePorts = availablePorts.Where(port => port.StartsWith("/dev/tty.usb")).ToArray();
-            #endif
+#endif
             Debug.Log("Looking for Arduino on available serial ports...");
         }
         
@@ -81,10 +81,10 @@ public class SerialComManager : MonoBehaviour
             {
                 if(debug) Debug.Log($"Could not open port: {e.Message}");
 
-                #if UNITY_STANDALONE_LINUX
+#if UNITY_STANDALONE_LINUX
                     if(e.Message.Contains("Permission denied")) 
                         Debug.LogError("Your user does not have permission to access the serial port. On most distros you can run the following command, then reboot:\nsudo usermod -aG dialout yourusername");
-                #endif
+#endif
 
                 continue;
             }
@@ -179,11 +179,12 @@ public class SerialComManager : MonoBehaviour
         instance = null;
     }
 #else
-    private void Awake()
-    {
-        Debug.LogError("Please update .Net Version");
-        Debug.Break();
-    }
+        private void Awake()
+        {
+            Debug.LogError("Please update .Net Version");
+            Debug.Break();
+        }
 #endif
 
+    }
 }

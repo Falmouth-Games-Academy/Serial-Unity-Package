@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Example : MonoBehaviour
+namespace GamesAcademy.SerialPackage.Examples
 {
-    
+    public class SerialBlink_Example : MonoBehaviour
+    {
+
 #if SUP_API_SET
     [SerializeField] private float brightness;
     [SerializeField] private Image im;
@@ -29,5 +31,7 @@ public class Example : MonoBehaviour
         SerialComManager.instance.SendDataToArduino($"b{lPin}");
     }
 #endif
+
+    }
 
 }
