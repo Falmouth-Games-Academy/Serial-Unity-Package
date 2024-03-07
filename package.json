@@ -11,5 +11,10 @@
     "url": "https://github.falmouth.ac.uk/Games-Academy/Unity-Serial-Package.git"
   },
   "samples": [
+    {
+      "displayName": "SerialBlink",
+      "description": "Simple sample to show off the serial communication.",
+      "path": "Samples~/SerialBlink"
+  }
   ]
 }
